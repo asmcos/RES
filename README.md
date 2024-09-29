@@ -29,3 +29,28 @@ Resource Exchange System
 
 ## 多助 货币和积分兑换
 如果你急需资源但没有积分，可以使用货币兑换其他用户的积分。同时，其他用户的积分也将转换为货币。
+
+## 使用帮助 
+
+```
+git clone https://github.com/asmcos/RES
+cd RES
+python3 examples/client_main.py
+```
+
+例子中
+
+```
+    requests.server.apply()
+    
+    ret = requests.server.get("https://bing.com")
+    print(ret.status_code)
+```
+
+apply 是获取一个requests服务器
+get  是让服务器帮你获取一个请求并且返回内容
+
+
+如果需要切换服务器,需要再次 调用apply
+
+ 
