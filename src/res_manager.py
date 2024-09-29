@@ -71,7 +71,7 @@ def register_client(sid,message):
 def register_node(sid,message):
     n = node_list.get(sid,{})
     n["server"] = message["server"]
-    
+    n["users"]  = 0 
 
     node_list[sid] = n
 
@@ -79,9 +79,17 @@ def register_node(sid,message):
 @sio.event
 def get_anode(sid,message):
     #get a idle node
+    min_users    = -1
+    current_node = ""
     for n in node_list.keys():
         v = node_list[n]
-    data = {"node_server":v["server"]}
+        if v["users"] <= min_users or min_users == -1: 
+            current_node = n
+            min_users = v["users"]
+
+    node_list[current_node]["users"] += 1    
+
+    data = {"node_server":node_list[current_node]["server"]}
 
     sio.emit("get_node_callback",data,to=sid)    
 

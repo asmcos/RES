@@ -94,22 +94,31 @@ class node_server():
 
     @sio.event
     def register_server(sid,message):
-        l = server_list.get(sid,[])
-        l.append(message["type"])
+        l = server_list.get(sid,{"type":[],"users":0})
 
+        l["type"].append(message["type"])
+        
         server_list[sid] = l
 
     @sio.event
     def apply(sid,message):
         t = message["type"]
         data = {"sid":"","type":t,"peerid":""}
+        min_user = -1
+        current_server = None
+
         for sk in server_list.keys():
             sv = server_list[sk]
-            if t in sv:
-                data["sid"]  = sk
-                data["type"] = t
-                data["peerid"] = client_list[sk]["peerid"]
-                break
+            if t in sv["type"]:
+                if sv["users"] <= min_user or min_user == -1:
+                    current_server = sk
+                    min_user = sv["users"]
+
+        sk = current_server
+        server_list[sk]["users"] += 1
+        data["sid"]    = sk
+        data["type"]   = t
+        data["peerid"] = client_list[sk]["peerid"]
             
         sio.emit("apply_callback",data,to=sid)
 
