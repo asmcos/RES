@@ -58,7 +58,7 @@ class server:
         server.count += 1
         server.sio.emit("exec_func",data)
         with condition:
-            condition.wait()
+            condition.wait(5)
         ret = server.responequeue[data["order"]]
         server.responequeue[data["order"]] = None
         return ret
@@ -75,10 +75,19 @@ class server:
         data["order"]    = server.count
         server.count += 1
         server.sio.emit("exec_func",data)
+        with condition:
+            condition.wait(5)
+        ret = server.responequeue[data["order"]]
+        server.responequeue[data["order"]] = None
+        return ret
 
     @staticmethod
     def exec_get(*args,**kwargs):
-        ret = requests.get(*args,**kwargs)
+        try:
+            ret = requests.get(*args,**kwargs)
+        except:
+            ret = Response()
+            ret.status_code = 403
         return ret
 
     @staticmethod
